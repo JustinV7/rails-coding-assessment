@@ -1,1 +1,1 @@
-# rails-coding-assessment
+# Apple Rails Coding Assessment
