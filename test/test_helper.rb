@@ -1,5 +1,5 @@
-require 'simplecov'
-SimpleCov.start 'rails'
+# require 'simplecov'
+# SimpleCov.start 'rails' # coverage files are not generating for unknown reason
 
 ENV['RAILS_ENV'] ||= 'test'
 require_relative "../config/environment"
@@ -13,4 +13,8 @@ class ActiveSupport::TestCase
   fixtures :all
 
   # Add more helper methods to be used by all tests here...
+
+  def response_payload
+    JSON.parse(response.body) if response.body.valid_json?
+  end
 end

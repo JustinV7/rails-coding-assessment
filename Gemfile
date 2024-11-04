@@ -54,9 +54,13 @@ group :test do
   gem 'selenium-webdriver', '>= 4.0.0.rc1'
   # Easy installation and use of web drivers to run system tests with browsers
   gem 'webdrivers'
+  gem 'webmock'
+  # gem 'vcr' # Removed because further runs of `rails test` would throw Yaml error loading the vcr files.
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'httparty'
+gem 'apipie-rails'
+gem 'pry'
