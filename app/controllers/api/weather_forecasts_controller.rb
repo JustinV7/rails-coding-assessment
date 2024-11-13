@@ -5,7 +5,7 @@ module Api
     rescue_from ThirdParty::Errors::ServerError, with: :fatal_error
     rescue_from ThirdParty::Errors::UnexpectedResponseError, with: :fatal_error
 
-    api :POST, '/api/weather_forcats/location'
+    api :POST, '/api/weather_forecasts/location'
     param :address, String, desc: 'Location address for weather API call.', required: true
     def location
       address = params[:address]
