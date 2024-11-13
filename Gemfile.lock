@@ -124,6 +124,7 @@ GEM
     minitest (5.25.1)
     msgpack (1.7.3)
     multi_xml (0.6.0)
+    mysql2 (0.5.6)
     net-imap (0.4.17)
       date
       net-protocol
@@ -138,7 +139,6 @@ GEM
       racc (~> 1.4)
     nokogiri (1.16.7-x86_64-darwin)
       racc (~> 1.4)
-    pg (1.5.9)
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -265,7 +265,7 @@ DEPENDENCIES
   jbuilder (~> 2.7)
   listen (~> 3.3)
   minitest
-  pg (~> 1.1)
+  mysql2 (~> 0.5)
   pry
   puma (~> 5.0)
   rack-mini-profiler (~> 2.0)
