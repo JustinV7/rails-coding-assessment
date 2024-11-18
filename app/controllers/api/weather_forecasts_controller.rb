@@ -12,9 +12,14 @@ module Api
       property :datetime, String, desc: 'DateTime string for forecast values.'
     end
 
-    api :POST, '/api/weather_forecasts/location'
+    def_param_group :address_error do
+      property :message, String, desc: 'Error from helper'
+    end
+
+    api :POST, '/api/weather_forecasts/location', 'Weather Forecast by Location'
     param :address, String, desc: 'Location address for weather API call.', required: true
     returns array_of: :forecast_data
+    returns :address_error, code: 422
     def location
       address = params[:address]
       @subject = address
