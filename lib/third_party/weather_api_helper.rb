@@ -1,9 +1,10 @@
 module ThirdParty
   class WeatherApiHelper
-    attr_reader :location, :url
+    attr_reader :location, :url, :content_type
 
-    def initialize(location: String)
+    def initialize(location, content_type=nil)
       @location = location
+      @content_type = content_type || 'json'
     end
 
     def forecast(days = 10)
@@ -14,26 +15,14 @@ module ThirdParty
           chronoUnit: 'days',
           forecastDays: days,
           aggregateHours: 24,
-          contentType: 'json'
+          contentType: self.content_type
         }
         @url = "#{forecast_url}?#{request_hash.to_query}"
         party = HTTParty.get self.url
 
         if [200].include? party.code
           # OK
-          response = JSON.parse(party.body)
-          weather_data = []
-          begin
-            response['locations'][CGI.escape(self.location)]['values'].each do |data|
-              # Response data to store: 'temp' 'mint' 'maxt' 'datetime'
-              weather_data << {
-                temp: data['temp'], min: data['mint'], max: data['maxt'],
-                datetime: DateTime.parse(data['datetimeStr'])
-              }
-            end
-          rescue StandardError => e
-            raise ThirdParty::Errors::UnexpectedResponseError.new e.message
-          end
+          weather_data = parse_response(party)
         elsif [400, 401, 428].include? party.code
           # Client Errors
           raise ThirdParty::Errors::ClientError.new party.body
@@ -54,6 +43,40 @@ module ThirdParty
     end
 
     private
+
+    def parse_response(response)
+      # Response data to store: 'temp' 'mint' 'maxt' 'datetime'
+      weather_data = []
+      case self.content_type
+      when 'json'
+        raise Errors::UnexpectedResponseError.new 'Expected valid JSON' unless response.body.valid_json?
+        body = JSON.parse(response.body)
+        begin
+          body['locations'][CGI.escape(self.location)]['values'].each do |data|
+            weather_data << {
+              temp: data['temp'], min: data['mint'], max: data['maxt'],
+              datetime: DateTime.parse(data['datetimeStr'])
+            }
+          end
+        rescue StandardError => e
+          raise ThirdParty::Errors::UnexpectedResponseError.new e.message
+        end
+      when 'csv'
+        raise Errors::UnexpectedResponseError.new 'Expected valid CSV' unless response.body.valid_csv?
+        csv = CSV.parse(response.body, headers: true)
+        csv.map do |day|
+          weather_data << {
+            temp: day['Temperature'],
+            min: day['Minimum Temperature'],
+            max: day['Maximum Temperature'],
+            datetime: day['Date time'],
+          }
+        end
+      else nil
+      end
+
+      weather_data
+    end
 
     def forecast_url
       'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/weatherdata/forecast'

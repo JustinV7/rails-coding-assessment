@@ -24,7 +24,7 @@ module Api
       address = params[:address]
       @subject = address
       forecast = Rails.cache.fetch("forecast-location-#{address}") do
-        ThirdParty::WeatherApiHelper.new(location: address).forecast
+        ThirdParty::WeatherApiHelper.new(address).forecast
       end
       render_json(forecast)
     end

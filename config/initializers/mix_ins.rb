@@ -13,6 +13,15 @@ class String
       false
     end
   end
+
+  def valid_csv?
+    begin
+      CSV.parse(self)
+      true
+    rescue
+      false
+    end
+  end
 end
 
 class Time
